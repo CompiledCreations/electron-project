@@ -1,0 +1,48 @@
+{
+  "name": "electron-project",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "build": "webpack --config ./webpack.config.js --mode production",
+    "build:pack": "electron-builder --dir",
+    "build:dist": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently --kill-others 'npm run start:web' 'nodemon --watch \"./src/main/**/*\" --watch \"./src/common/**/*\" --ignore *.test.* --ext js,ts,json --exec npm run start:electron'",
+    "start:web": "webpack-dev-server --config ./webpack/renderer.config.js --mode development",
+    "start:electron": "webpack --config ./webpack/main.config.js --mode development && electron ./build/main/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "main": "build/main/main.js",
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "concurrently": "^5.1.0",
+    "electron": "^8.0.1",
+    "electron-builder": "^22.3.2",
+    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-template": "^6.2.0",
+    "nodemon": "^2.0.2",
+    "webpack": "^4.41.6",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.10.3",
+    "webpack-merge": "^4.2.2"
+  },
+  "build": {
+    "appId": "com.compiledcreations.electron",
+    "asar": false,
+    "files": [
+      "build/**/*",
+      "!**/*.js.map",
+      "!**/*.ts",
+      "!**/tsconfig.json",
+      "!**/jest.config.js"
+    ],
+    "copyright": "© 2020 Compiled Creations Limited. All rights reserved.",
+    "productName": "MyApp",
+    "mac": {
+      "category": "public.app-category.productivity"
+    }
+  }
+}
