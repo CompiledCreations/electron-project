@@ -28,7 +28,8 @@ module.exports = ({ compilerOptions, reportFiles }) => {
       new ForkTsCheckerWebpackPlugin({
         compilerOptions,
         checkSyntacticErrors: true,
-        reportFiles
+        reportFiles,
+        eslint: true
       })
     ]
   };

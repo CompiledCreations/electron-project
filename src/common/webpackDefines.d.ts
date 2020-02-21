@@ -1,1 +1,1 @@
-declare var INDEX_URL: string;
+declare const INDEX_URL: string;
