@@ -19,10 +19,15 @@ module.exports = {
     }
   },
   env: {
-    "jest/globals": true
+    browser: true,
+    "jest/globals": true,
+    node: true
   },
   rules: {
+    "@typescript-eslint/no-explicit-any": "off",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "jest/prefer-expect-assertions": "off",
+    "jest/require-top-level-describe": "off"
   }
 };
