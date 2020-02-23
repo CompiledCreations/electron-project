@@ -5,10 +5,13 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  background-color: white;
+  color: #61dafb;
 }
 
 .logo {
   display: block;
-  width: 25vh;
-  height: 25vh;
+  width: auto;
+  height: 50vh;
 }

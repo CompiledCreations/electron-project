@@ -22,7 +22,7 @@ module.exports = ({ compilerOptions, reportFiles }) => {
       ]
     },
     resolve: {
-      extensions: [".ts", ".tsx", "js"]
+      extensions: [".ts", ".tsx", ".js"]
     },
     plugins: [
       new ForkTsCheckerWebpackPlugin({
