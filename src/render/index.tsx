@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
+import { App } from "./App/App";
+
 import "./index.scss";
 
-ReactDOM.render(<div>Hello World</div>, document.body.querySelector("#root"));
+ReactDOM.render(<App />, document.body.querySelector("#root"));

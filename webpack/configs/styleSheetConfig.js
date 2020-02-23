@@ -19,10 +19,8 @@ module.exports = (env, { mode }) => {
         {
           test: /\.(sa|sc|c)ss$/,
           use: [
-            mode === "development"
-              ? "style-loader"
-              : MiniCssExtractPlugin.loader,
-            "css-loader",
+            mode === "development" ? "style-loader" : MiniCssExtractPlugin.loader,
+            { loader: "css-loader", options: { modules: true } },
             "sass-loader"
           ]
         }

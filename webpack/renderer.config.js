@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const merge = require("webpack-merge");
 
+const imageAssetsConfig = require("./configs/imageAssetsConfig");
 const styleSheetConfig = require("./configs/styleSheetConfig");
 const baseConfig = require("./base.config");
 
@@ -28,7 +29,8 @@ const rendererConfig = (env, options) =>
         port: 3000
       }
     },
-    styleSheetConfig(env, options)
+    styleSheetConfig(env, options),
+    imageAssetsConfig(env, options)
   );
 
 module.exports = rendererConfig;

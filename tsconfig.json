@@ -11,6 +11,7 @@
     "sourceMap": true,
     "strict": true,
     "target": "es5",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   }
 }
