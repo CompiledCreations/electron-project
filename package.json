@@ -12,9 +12,9 @@
     "build:pack": "electron-builder --dir",
     "build:dist": "electron-builder",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
-    "start": "concurrently --kill-others 'npm run start:web' 'nodemon --watch \"./src/main/**/*\" --watch \"./src/preload/**/*\" --watch \"./src/common/**/*\" --ignore *.test.* --ext js,ts,json --exec npm run start:electron'",
+    "start": "concurrently -c red,green -n wprenderer,main --kill-others 'npm run start:web' 'node ./scripts/start-electron.js'",
     "start:web": "webpack-dev-server --config ./webpack/renderer.config.js --mode development",
-    "start:electron": "npm run build:main -- --mode development && npm run build:preload -- --mode development && electron ./build/main/main.js",
+    "start:electron": "concurrently -c blue,magenta -n wpmain,wppreload 'npm run build:main -- --mode development' 'npm run build:preload -- --mode development' && electron ./build/main/main.js",
     "storybook": "start-storybook -p 6006",
     "test": "jest"
   },
