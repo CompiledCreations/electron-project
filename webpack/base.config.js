@@ -9,16 +9,17 @@ const outputPath = path.resolve("build");
 const baseConfig = ({ mode, target, outDirectory, typescript }) =>
   merge(
     {
+      mode,
       devtool: mode === "development" ? "inline-source-map" : "source-map",
       target,
       output: {
         filename: "[name].js",
-        path: path.join(outputPath, outDirectory)
+        path: path.join(outputPath, outDirectory),
       },
       resolve: {
-        extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"]
+        extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"],
       },
-      plugins: [new CleanWebpackPlugin()]
+      plugins: [new CleanWebpackPlugin()],
     },
     typescriptConfig(typescript)
   );

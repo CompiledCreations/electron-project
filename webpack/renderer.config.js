@@ -12,8 +12,8 @@ const rendererConfig = (env, options) =>
       target: "web",
       outDirectory: "render",
       typescript: {
-        reportFiles: ["./src/common/**/*", "./src/render/**/*"]
-      }
+        reportFiles: ["./src/common/**/*", "./src/render/**/*"],
+      },
     }),
     {
       entry: { index: "./src/render/index.tsx" },
@@ -22,12 +22,9 @@ const rendererConfig = (env, options) =>
           title: "My Project",
           template: require("html-webpack-template"),
           inject: false,
-          appMountId: "root"
-        })
+          appMountId: "root",
+        }),
       ],
-      devServer: {
-        port: 3000
-      }
     },
     styleSheetConfig(env, options),
     imageAssetsConfig(env, options)

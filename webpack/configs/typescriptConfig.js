@@ -14,23 +14,23 @@ module.exports = ({ compilerOptions, reportFiles }) => {
                 happyPackMode: true,
                 transpileOnly: true,
                 onlyCompileBundledFiles: true,
-                compilerOptions
-              }
-            }
-          ]
-        }
-      ]
+                compilerOptions,
+              },
+            },
+          ],
+        },
+      ],
     },
     resolve: {
-      extensions: [".ts", ".tsx", ".js"]
+      extensions: [".ts", ".tsx", ".js"],
     },
     plugins: [
       new ForkTsCheckerWebpackPlugin({
         compilerOptions,
         checkSyntacticErrors: true,
         reportFiles,
-        eslint: true
-      })
-    ]
+        eslint: true,
+      }),
+    ],
   };
 };
