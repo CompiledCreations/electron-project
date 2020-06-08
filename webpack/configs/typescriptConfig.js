@@ -30,6 +30,7 @@ module.exports = ({ compilerOptions, reportFiles }) => {
         checkSyntacticErrors: true,
         reportFiles,
         eslint: true,
+        silent: true,
       }),
     ],
   };
