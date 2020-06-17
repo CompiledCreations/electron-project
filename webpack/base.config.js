@@ -18,6 +18,12 @@ const baseConfig = ({ mode, target, outDirectory, typescript }) =>
       },
       resolve: {
         extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"],
+        alias: {
+          "@common": path.resolve("src/common"),
+          "@main": path.resolve("src/main"),
+          "@preload": path.resolve("src/preload"),
+          "@render": path.resolve("src/render"),
+        },
       },
       plugins: [new CleanWebpackPlugin()],
     },

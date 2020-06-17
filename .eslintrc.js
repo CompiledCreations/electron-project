@@ -11,23 +11,35 @@ module.exports = {
     "plugin:import/typescript",
     "plugin:react/recommended",
     "plugin:jest/all",
-    "prettier/@typescript-eslint"
+    "prettier/@typescript-eslint",
   ],
   settings: {
     react: {
-      version: "detect"
-    }
+      version: "detect",
+    },
+    // Setup import resolver with module aliases
+    "import/resolver": {
+      alias: {
+        map: [
+          ["@common", "./src/common"],
+          ["@main", "./src/main"],
+          ["@preload", "./src/preload"],
+          ["@render", "./src/render"],
+        ],
+        extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"],
+      },
+    },
   },
   env: {
     browser: true,
     "jest/globals": true,
-    node: true
+    node: true,
   },
   rules: {
     "@typescript-eslint/no-explicit-any": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "jest/prefer-expect-assertions": "off",
-    "jest/require-top-level-describe": "off"
-  }
+    "jest/require-top-level-describe": "off",
+  },
 };
