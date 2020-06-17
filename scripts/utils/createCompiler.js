@@ -1,5 +1,6 @@
 const chalk = require("chalk");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const { SyncHook } = require("tapable");
 const webpack = require("webpack");
 
 const typescriptIssueFormatter = require("./typescriptIssueFormatter");
@@ -17,18 +18,21 @@ function createCompiler(compilerName, configPath) {
   const config = configFactory(...configFactoryArgs);
   const compiler = webpack(config);
 
-  const prefix = compilerColors[compilerName](`[${compilerName}]`);
-
-  logIssue = (issue) => {
-    console.log(prefix, typescriptIssueFormatter(issue));
+  const logMessage = (message) => {
+    const prefix = compilerColors[compilerName](`[${compilerName}]`);
+    console.log(prefix, message);
   };
+
+  // Create a custom hook so we can keep track of when the compiler succeeds
+  let successCounter = 0;
+  compiler.hooks.compilerSuccess = new SyncHook(["count"]);
 
   // "invalid" event fires when you have changed a file, and webpack is
   // recompiling a bundle. WebpackDevServer takes care to pause serving the
   // bundle, so if you refresh, it'll wait instead of serving the old one.
   // "invalid" is short for "bundle invalidated", it doesn't imply any errors.
   compiler.hooks.invalid.tap("invalid", () => {
-    console.log(prefix, `Compiling...`);
+    logMessage(`Compiling...`);
   });
 
   let tsMessagesPromise;
@@ -69,18 +73,26 @@ function createCompiler(compilerName, configPath) {
 
     if (statsData.errors.length) {
       statsData.errors.forEach((message) => {
-        console.log(prefix, message);
+        logMessage(message);
       });
 
-      console.log(prefix, chalk.red.bold("Failed to compile"));
+      logMessage(chalk.red.bold("Failed to compile"));
+
+      // Reset the counter
+      successCounter = 0;
+
       return;
     }
 
     statsData.warnings.forEach((message) => {
-      console.log(prefix, message);
+      logMessage(message);
     });
 
-    console.log(prefix, chalk.green("Compiled successfully!"));
+    logMessage(chalk.green("Compiled successfully!"));
+
+    // Increment success counter and emit
+    successCounter++;
+    compiler.hooks.compilerSuccess.call(successCounter);
   });
 
   return compiler;

@@ -1,11 +1,17 @@
 const chalk = require("chalk");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const nodemon = require("nodemon");
-const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
+const webpack = require("webpack");
 
 const createCompiler = require("./utils/createCompiler");
 
+/**
+ * Custom logging for webpack watch
+ *
+ * @param {string} sourceName
+ * @param {Error} err
+ * @param {webpack.stats} stats
+ */
 function logStats(sourceName, err, stats) {
   if (err) {
     console.error(sourceName, err.stack || err);
@@ -26,80 +32,114 @@ function logStats(sourceName, err, stats) {
   }
 }
 
-const watchOptions = {
-  "info-verbosity": "none",
-};
+/**
+ * Start the electron process and shut everything down when the user quits
+ */
+function startElectron(server) {
+  // Launch electron without watching files
+  let electronProcess = nodemon({
+    exec: "electron ./build/main/main.js",
+    ignore: "*",
+  });
 
-const mainCompiler = createCompiler("Main", require.resolve("../webpack/main.config"));
-mainCompiler.watch(
-  {
-    ...watchOptions,
-    ignored: ["preload/**/*"],
-  },
-  logStats.bind(logStats, "Main")
-);
+  // When the user cleanly exists then we shutdown, otherwise nodemon will wait
+  // for changes and restart.
+  electronProcess.on("exit", async (reason) => {
+    if (!reason) {
+      let exitCode = 0;
+      console.log(chalk.blue.inverse("[Main]"), "Application shutting down...");
+      try {
+        await server.close();
+      } catch {
+        // Error shutting down dev server
+        exitCode = -1;
+      } finally {
+        process.exit(exitCode);
+      }
+    }
+  });
 
-const preloadCompiler = createCompiler("Preload", require.resolve("../webpack/preload.config"));
-preloadCompiler.watch(
-  {
-    ...watchOptions,
-    ignored: ["main/**/*"],
-  },
-  logStats.bind(logStats, "Preload")
-);
+  return electronProcess;
+}
 
-function launchDevServer() {
+/**
+ * Create the Renderer compiler and launch webpack-dev-server with it
+ *
+ * @returns Webpack dev server
+ */
+function startDevServer() {
   const rendererCompiler = createCompiler(
     "Renderer",
     require.resolve("../webpack/renderer.config")
   );
-  const server = new WebpackDevServer(rendererCompiler, {
+
+  const newServer = new WebpackDevServer(rendererCompiler, {
     port: 3000,
     stats: "errors-warnings",
     hot: true,
     clientLogLevel: "silent",
     quiet: true,
   });
+
   return new Promise((resolve, reject) => {
-    server.listen(3000, "localhost", (error) => {
+    newServer.listen(3000, "localhost", (error) => {
       if (error) {
         reject(error);
       }
 
-      resolve(server);
+      resolve(newServer);
     });
   });
 }
 
+/**
+ * Start the main electron process with compilers in watch mode
+ *
+ * @param {WebpackDevServer} server The server hosting the renderer
+ */
+function startMainProcess(server) {
+  let electronProcess;
+  const counts = {};
+
+  // Start the Electron when both compilers first succeed. Restart on any success after that.
+  function handleCompilerSuccess() {
+    if (counts.Main && counts.Preload) {
+      if (electronProcess) {
+        electronProcess.restart();
+      } else {
+        electronProcess = startElectron(server);
+      }
+    }
+  }
+
+  // Create the compiler and start watching
+  function spawnCompiler(name, configPath, ignored) {
+    // Create the compiler and start listening
+    const preloadCompiler = createCompiler(name, require.resolve(configPath));
+    preloadCompiler.hooks.compilerSuccess.tap("CompilerSuccess", (count) => {
+      counts[name] = count;
+      handleCompilerSuccess();
+    });
+
+    // Start the compiler in watch mode
+    preloadCompiler.watch(
+      {
+        "info-verbosity": "none",
+        ignored,
+      },
+      logStats.bind(logStats, name)
+    );
+  }
+
+  spawnCompiler("Main", "../webpack/main.config", ["preload/**/*"]);
+  spawnCompiler("Preload", "../webpack/preload.config", ["main/**/*"]);
+}
+
 (async function main() {
   try {
-    const server = await launchDevServer();
-
-    // Lanch electron and start watching the built goods
-    nodemon({
-      exec: "electron ./build/main/main.js",
-      watch: ["./build/**/*"],
-      ignore: "*.test.*",
-      ext: "js,json",
-    });
-
-    // When the user cleanly exists then we shutdown, otherwise nodemon will wait
-    // for changes and restart.
-    nodemon.on("exit", async (reason) => {
-      if (!reason) {
-        let exitCode = 0;
-        console.log("Application shutting down...");
-        try {
-          await server.close();
-        } catch {
-          // Error shutting down dev server
-          exitCode = -1;
-        } finally {
-          process.exit(exitCode);
-        }
-      }
-    });
+    const server = await startDevServer();
+    startMainProcess(server);
   } catch (error) {
-    console.log(error);
+    console.log(chalk.red.inverse(error));
   }
 })();
