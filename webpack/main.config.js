@@ -10,12 +10,8 @@ const mainConfig = (env, { mode }) =>
       target: "electron-main",
       outDirectory: "main",
       typescript: {
-        reportFiles: [
-          "./src/common/**/*",
-          "./src/main/**/*",
-          "!./src/main/preload.ts"
-        ]
-      }
+        reportFiles: ["./src/common/**/*", "./src/main/**/*", "!./src/main/preload.ts"],
+      },
     }),
     {
       entry: { main: "./src/main/main.ts" },
@@ -24,13 +20,13 @@ const mainConfig = (env, { mode }) =>
           INDEX_URL:
             mode === "development"
               ? JSON.stringify("http://localhost:3000")
-              : `require('url').format({ protocol: "file", slashes: true, pathname: require('path').join(__dirname, "..", "render", "index.html") })`
-        })
+              : `require('url').format({ protocol: "file", slashes: true, pathname: require('path').join(__dirname, "..", "render", "index.html") })`,
+        }),
       ],
       node: {
         __dirname: false,
-        __filename: false
-      }
+        __filename: false,
+      },
     }
   );
 

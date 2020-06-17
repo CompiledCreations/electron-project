@@ -1,5 +1,7 @@
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
+const typescriptIssueFormatter = require("../../scripts/utils/typescriptIssueFormatter");
+
 module.exports = ({ compilerOptions, reportFiles }) => {
   return {
     module: {
@@ -15,6 +17,7 @@ module.exports = ({ compilerOptions, reportFiles }) => {
                 transpileOnly: true,
                 onlyCompileBundledFiles: true,
                 compilerOptions,
+                errorFormatter: typescriptIssueFormatter,
               },
             },
           ],
