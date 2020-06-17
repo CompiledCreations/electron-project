@@ -9,7 +9,7 @@
     "build:pack": "electron-builder --dir",
     "build:dist": "electron-builder",
     "lint": "eslint ./src --ext .js,.jsx,.ts,.tsx",
-    "start": "node ./scripts/start-electron.js",
+    "start": "node ./scripts/start.js",
     "storybook": "start-storybook -p 6006",
     "test": "jest"
   },
