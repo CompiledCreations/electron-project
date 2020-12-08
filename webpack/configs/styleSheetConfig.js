@@ -1,31 +1,51 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = (env, { mode }) => {
-  const plugins = [];
-
-  // Extract CSS assets for production builds
-  if (mode !== "development") {
-    plugins.push(
-      new MiniCssExtractPlugin({
-        filename: "[name].[hash].css",
-        chunkFilename: "[id].[hash].css"
-      })
-    );
+  // Use style-loader during development for speed
+  let assetLoader = MiniCssExtractPlugin.loader;
+  if (mode === "development") {
+    assetLoader = "style-loader";
   }
+
+  // Shared options for css-loader
+  const cssLoaderOptions = {
+    importLoaders: 1,
+  };
 
   return {
     module: {
       rules: [
         {
           test: /\.(sa|sc|c)ss$/,
+          use: [assetLoader, { loader: "css-loader", options: cssLoaderOptions }, "sass-loader"],
+          exclude: /\.module\.(sa|sc|c)ss$/,
+        },
+        {
+          test: /\.(sa|sc|c)ss$/,
           use: [
-            mode === "development" ? "style-loader" : MiniCssExtractPlugin.loader,
-            { loader: "css-loader", options: { modules: true } },
-            "sass-loader"
-          ]
-        }
-      ]
+            assetLoader,
+            {
+              loader: "css-loader",
+              options: {
+                ...cssLoaderOptions,
+                modules: {
+                  localIdentName: "[local]__[hash:base64:5]",
+                },
+              },
+            },
+            "sass-loader",
+          ],
+          include: /\.module\.(sa|sc|c)ss$/,
+        },
+      ],
     },
-    plugins
+    plugins: [
+      // Extract CSS assets for production builds
+      mode !== "development" &&
+        new MiniCssExtractPlugin({
+          filename: "[name].[hash].css",
+          chunkFilename: "[id].[hash].css",
+        }),
+    ].filter(Boolean),
   };
 };

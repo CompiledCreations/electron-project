@@ -10,11 +10,11 @@ module.exports = (env, options) => ({
             loader: "url-loader",
             options: {
               limit: 8000,
-              name: "images/[name].[hash].[ext]"
-            }
-          }
-        ]
-      }
-    ]
-  }
+              name: "images/[name].[hash].[ext]",
+            },
+          },
+        ],
+      },
+    ],
+  },
 });

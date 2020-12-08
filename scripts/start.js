@@ -40,6 +40,7 @@ function startElectron(server) {
   let electronProcess = nodemon({
     exec: "electron ./build/main/main.js",
     ignore: "*",
+    args: process.argv,
   });
 
   // When the user cleanly exists then we shutdown, otherwise nodemon will wait

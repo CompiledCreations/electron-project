@@ -5,6 +5,8 @@ const imageAssetsConfig = require("./configs/imageAssetsConfig");
 const styleSheetConfig = require("./configs/styleSheetConfig");
 const baseConfig = require("./base.config");
 
+const pkg = require("../package.json");
+
 const rendererConfig = (env, options) =>
   merge(
     baseConfig({
@@ -19,7 +21,7 @@ const rendererConfig = (env, options) =>
       entry: { index: "./src/render/index.tsx" },
       plugins: [
         new HtmlWebpackPlugin({
-          title: "My Project",
+          title: pkg.productName,
           template: require("html-webpack-template"),
           inject: false,
           appMountId: "root",
